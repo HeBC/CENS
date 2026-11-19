@@ -36,7 +36,7 @@ Requires GNU Fortran, make, Python 3, NumPy and SciPy (tested with GNU 11.4,
 NumPy 1.26.4, SciPy 1.15.3 in WSL Ubuntu).
 
 ```sh
-cd /mnt/d/Code/CENS/MBPT/VRenormalize/n2loopt_source2
+cd /mnt/d/Code/CENS/MBPT/VRenormalize/n2loopt
 make -j4
 python3 export_nuhamil.py --variant both --nmesh 100 --kmax 8 --jmax 8 --outdir /path/to/results
 ```

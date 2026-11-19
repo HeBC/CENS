@@ -1,6 +1,6 @@
 #XLF= ifort -O3 -static  -heap-arrays 1024
 XLF= gfortran -O3 -std=legacy -fallow-argument-mismatch
-N2LOOPT_DIR = n2loopt_source2
+N2LOOPT_DIR = n2loopt
 N2LOOPT_LIB = $(N2LOOPT_DIR)/libn2loopt.a
 
 vrenorm.exe :   renorm-modules.o renorm-main.o renorm-potentials.o renorm-vkrg.o renorm-gmatrix.o  renorm-nocore.o renorm-library.o renorm-vlowk.o $(N2LOOPT_LIB)
