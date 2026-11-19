@@ -504,6 +504,18 @@ SUBROUTINE potential_interface(ncoup,vkk,ichan)
      inn = 1
   CASE('Idaho-B')
      inn = 2
+  CASE('n2loopt')
+     ! Preserve the original CENS charge-channel selection convention.
+     inn = isospin_tz + 2
+     IF (csb == 'no-csb' .AND. cib == 'cib' .AND. isospin_tz /= 0) inn = 3
+     IF (csb == 'no-csb' .AND. cib == 'no-cib') inn = 2
+     IF (.NOT. ((csb == 'csb' .AND. cib == 'cib') .OR. &
+          (csb == 'no-csb' .AND. (cib == 'cib' .OR. cib == 'no-cib')))) THEN
+        STOP 'n2loopt: invalid csb_choice/cib_choice combination'
+     ENDIF
+  CASE('n2loopt-isospin')
+     ! The generator restores symmetry; no charge-channel substitution.
+     inn = isospin_tz + 2
   CASE('n3lo')
      SELECT CASE ( isospin_tz)
      CASE (-1)
@@ -630,6 +642,10 @@ SUBROUTINE potential_interface(ncoup,vkk,ichan)
               CALL cdbonn
            CASE('n3lo')
               CALL n3lo
+           CASE('n2loopt')
+              CALL n2loopt_cens(0)
+           CASE('n2loopt-isospin')
+              CALL n2loopt_cens(1)
            CASE('Idaho-A')
               CALL idaho
            CASE('Idaho-B')

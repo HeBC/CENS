@@ -1,0 +1,89 @@
+--- upstream/ang_mom_module.f90
++++ vendor/ang_mom_module.f90
+@@ -4,7 +4,7 @@
+ !     and transformation coefficients when going from 
+ !     lab system  <--> cm system
+ !
+-MODULE ang_mom_functions
++MODULE source2_ang_mom_functions
+   REAL*8, PRIVATE :: f_mb(50),g_mb(50),w_mb(50)
+   INTEGER, PRIVATE :: kh(200)
+   REAL*8, PARAMETER, PRIVATE :: pi=3.141592654
+@@ -398,4 +398,4 @@
+ 
+   END FUNCTION spherical_harmonics
+ 
+-END MODULE ang_mom_functions
++END MODULE source2_ang_mom_functions
+--- upstream/chiral_nnlo_opt_simple.f90
++++ vendor/chiral_nnlo_opt_simple.f90
+@@ -73,7 +73,7 @@
+     end function delta
+     
+   subroutine init_chp_constants_nnlo_opt(rho,npart,e_scale)
+-    use ang_mom_functions, only : commons_to_angmom
++    use source2_ang_mom_functions, only : commons_to_angmom
+     implicit none   
+     real*8,intent(in)  :: rho
+     integer,intent(in) :: npart
+@@ -403,8 +403,8 @@
+     IF (sfr_heavyside(impi) == 0.0D0) return
+     
+     if ( q == 0.d0 ) then  
+-       q = q + eps 
+-       q2 = q*q 
++       res = s/sfr
++       return
+ !        res=s/sfr
+ !     else
+       endif
+@@ -446,8 +446,8 @@
+     IF (sfr_heavyside(impi) == 0.0D0) return
+     
+     if ( q == 0.d0 ) then  
+-       q = q + eps 
+-       q2 = q*q 
++       res = (sfr-twompi(impi))/(2.d0*sfr*twompi(impi))
++       return
+     end if
+     
+ !    res = datan( q*(sfr-twompi(impi) )/(q2 + sfr*twompi(impi) ) )/(2.0D0*q)
+@@ -758,7 +758,7 @@
+     
+   complex*16 function chiral_pot_nnlo_opt_np(stateP,stateQ,stateR,stateS)
+     use chiral_constants_nnlo_opt
+-    use ang_mom_functions, only : tjs 
++    use source2_ang_mom_functions, only : tjs 
+     
+     implicit none 
+     type(t_vector), intent(in) :: stateP,stateQ,stateR,stateS
+@@ -847,8 +847,8 @@
+ 
+     freg_nnlo=fregnnlo(p2, pp2)
+ !WARNING maybe dangerous... 1.d-10 should be safe enough(~4*lambda)
+-    if(freg_nnlo < 1.d-10) then
+-       vdir=0d0
++    if(freg_nnlo == 0.d0) then
++       chiral_pot_nnlo_opt_np=0d0
+        return
+     endif
+     
+@@ -950,7 +950,7 @@
+        
+        
+        ! 
+-       ! Below tjs is the 3-j symbol and is given in the module "ang_mom_functions" 
++       ! Below tjs is the 3-j symbol and is given in the module "source2_ang_mom_functions" 
+        ! You need to call "commons_to_angmom" to initialize the 3-j, 6-j symboles etc. 
+        ! 
+        WT = 0.d0 
+@@ -991,7 +991,8 @@
+            VT = chp_NLO_two_pion_exchange_VT(loop_L, 2)*s1qds2q
+        endif
+        
+-       vnlo = ( WT + WC + VS + VT ) !############ WARNING (check if WT should be here) #################
++       ! OPE is already included once, with its tensor operator, in vlo.
++       vnlo = ( WC + VS + VT )
+        
+        !
+        ! next-to-leading order contacts 
